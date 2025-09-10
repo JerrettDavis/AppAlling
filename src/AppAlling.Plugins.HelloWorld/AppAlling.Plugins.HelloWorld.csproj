@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\AppAlling.Abstractions\AppAlling.Abstractions.csproj"/>
+        <ProjectReference Include="..\AppAlling.Application\AppAlling.Application.csproj"/>
+        <ProjectReference Include="..\AppAlling.UI.WinForms\AppAlling.UI.WinForms.csproj"/>
+    </ItemGroup>
+
+    <Target Name="CopyPlugin" AfterTargets="Build">
+        <MakeDir Directories="$(SolutionDir)plugins"/>
+        <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll"
+              DestinationFiles="$(SolutionDir)plugins\$(AssemblyName).dll"
+              OverwriteReadOnlyFiles="true"
+              SkipUnchangedFiles="false"
+        />
+    </Target>
+
+</Project>

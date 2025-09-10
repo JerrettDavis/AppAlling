@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <WarningsAsErrors>false</WarningsAsErrors>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="coverlet.collector" Version="6.0.2"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>
+        <PackageReference Include="TinyBDD.Xunit.v3" Version="0.8.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Xunit.StaFact" Version="3.0.13" />
+        <PackageReference Include="xunit.v3" Version="3.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\AppAlling.Abstractions\AppAlling.Abstractions.csproj" />
+      <ProjectReference Include="..\..\src\AppAlling.Application\AppAlling.Application.csproj" />
+      <ProjectReference Include="..\..\src\AppAlling.Plugins.HelloWorld\AppAlling.Plugins.HelloWorld.csproj" />
+      <ProjectReference Include="..\..\src\AppAlling.UI.WinForms\AppAlling.UI.WinForms.csproj" />
+    </ItemGroup>
+
+</Project>
