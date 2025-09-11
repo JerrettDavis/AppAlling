@@ -1,4 +1,4 @@
-#pp Command Bus
+# Command Bus
 
 The **Command Bus** is AppAlling’s central mechanism for decoupling user actions (menu clicks, hotkeys, plugin requests) from the logic that executes them.
 
