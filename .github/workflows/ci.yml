@@ -89,19 +89,17 @@ jobs:
             ```
             ${{ env.COVERAGE_SUMMARY }}
             ```
-
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
+        shell: bash
         with:
           files: |
             **/TestResults/*/coverage.cobertura.xml
           flags: unittests
           fail_ci_if_error: true
           verbose: true
-          use_oidc: true
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
 
   release:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
