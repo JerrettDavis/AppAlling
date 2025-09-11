@@ -11,4 +11,7 @@
         <WarningsAsErrors>true</WarningsAsErrors>
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
+        <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    </PropertyGroup>
 </Project>
