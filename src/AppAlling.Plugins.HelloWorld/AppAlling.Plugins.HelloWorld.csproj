@@ -10,13 +10,20 @@
         <ProjectReference Include="..\AppAlling.UI.WinForms\AppAlling.UI.WinForms.csproj"/>
     </ItemGroup>
 
-    <Target Name="CopyPlugin" AfterTargets="Build">
-        <MakeDir Directories="$(SolutionDir)plugins"/>
-        <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll"
-              DestinationFiles="$(SolutionDir)plugins\$(AssemblyName).dll"
-              OverwriteReadOnlyFiles="true"
-              SkipUnchangedFiles="false"
-        />
+    <PropertyGroup>
+        <RepoRoot>$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), Directory.Build.props))</RepoRoot>
+        <PluginsOutDir>$(RepoRoot)artifacts\plugins\$(Configuration)\$(TargetFramework)</PluginsOutDir>
+        <CopyPluginOnBuild>true</CopyPluginOnBuild>
+    </PropertyGroup>
+
+    <Target Name="CopyPluginToArtifacts"
+            AfterTargets="Build"
+            Condition="'$(CopyPluginOnBuild)' == 'true'">
+        <MakeDir Directories="$(PluginsOutDir)"/>
+        <Copy SourceFiles="$(TargetPath)"
+              DestinationFolder="$(PluginsOutDir)"
+              SkipUnchangedFiles="true"/>
     </Target>
+
 
 </Project>
