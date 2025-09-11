@@ -33,22 +33,26 @@ public sealed class HelloWorldPlugin :
         services.AddSingleton<IToolWindowContribution>(this);
 
         // Register executors / factories
-        services.AddSingleton<ICommandExec>(new Exec("tools.sayHello", _ =>
-        {
-            MessageBox.Show("Hello from HelloWorld plugin!", "AppAlling");
-            return Task.CompletedTask;
-        }));
-
-        services.AddSingleton<ICommandExec>(new Exec("view.toggleTheme", sp =>
-        {
-            var store = sp.GetRequiredService<IStore<AppState>>();
-            var next = store.Current.Theme == "Light" ? "Dark" : "Light";
-            store.Dispatch(new SetTheme(next));
-            return Task.CompletedTask;
-        }));
+        services.AddSingleton<ICommandExec>(new Exec("tools.sayHello", SayHello));
+        services.AddSingleton<ICommandExec>(new Exec("view.toggleTheme", SetTheme));
 
         services.AddSingleton<IToolWindowFactory>(new HelloWindowFactory());
     }
+
+    private static Task SayHello(IServiceProvider sp)
+    {
+        MessageBox.Show("Hello from HelloWorld plugin!", "AppAlling");
+        return Task.CompletedTask;
+    }
+
+    private static Task SetTheme(IServiceProvider sp)
+    {
+        var store = sp.GetRequiredService<IStore<AppState>>();
+        var next = store.Current.Theme == "Light" ? "Dark" : "Light";
+        store.Dispatch(new SetTheme(next));
+        return Task.CompletedTask;
+    }
+    
 
     /// <summary>
     /// Declares the commands provided by this plugin.

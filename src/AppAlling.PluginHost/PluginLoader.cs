@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.Loader;
 using AppAlling.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,9 @@ namespace AppAlling.PluginHost;
 /// <param name="pluginDirectory">Directory path to scan for plugin DLLs.</param>
 public sealed class PluginLoader(string pluginDirectory)
 {
+    // Keep ALCs alive for the lifetime of the loader so assemblies aren't collected.
+    private readonly List<AssemblyLoadContext> _alcs = [];
+
     /// <summary>
     /// Loads plugins found under the directory provided to this loader.
     /// </summary>
@@ -23,9 +27,10 @@ public sealed class PluginLoader(string pluginDirectory)
             return [];
 
         var pluginsWithDll = Directory.GetFiles(pluginDirectory, "*.dll")
-            .Select(TryLoadAssembly)
+            .Select(TryLoadAssemblyWithAlc)
             .Where(asm => asm is not null)
-            .SelectMany(asm => asm!.GetTypes()
+            .SelectMany(asm => asm!
+                .GetTypes()
                 .Where(t => typeof(IAppallingPlugin).IsAssignableFrom(t) && !t.IsAbstract && !t.IsInterface)
                 .Select(t => (Type: t, Dll: asm.Location)))
             .Select(pair => (Plugin: TryCreatePlugin(pair.Type), pair.Dll))
@@ -33,14 +38,26 @@ public sealed class PluginLoader(string pluginDirectory)
             .ToList();
 
         foreach (var (plugin, dll) in pluginsWithDll)
-            contexts[plugin!] = new DefaultPluginContext(Path.GetDirectoryName(dll)!);
+        {
+            var root = Path.GetFullPath(Path.GetDirectoryName(dll)!);
+            contexts[plugin!] = new DefaultPluginContext(root);
+        }
 
         return pluginsWithDll.Select(x => x.Plugin!).ToList();
 
-        static Assembly? TryLoadAssembly(string dll)
+        Assembly? TryLoadAssemblyWithAlc(string dll)
         {
-            try { return Assembly.LoadFrom(dll); }
-            catch { return null; }
+            try
+            {
+                var root = Path.GetFullPath(Path.GetDirectoryName(dll)!);
+                var alc = new PluginAlc(root);
+                _alcs.Add(alc); // keep alive
+                return alc.LoadFromAssemblyPath(Path.GetFullPath(dll));
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         static IAppallingPlugin? TryCreatePlugin(Type t)
@@ -68,5 +85,18 @@ public sealed class PluginLoader(string pluginDirectory)
     {
         foreach (var p in plugins)
             p.ConfigureServices(services, ctxs[p]);
+    }
+
+    private sealed class PluginAlc : AssemblyLoadContext
+    {
+        private readonly string _dir;
+        public PluginAlc(string dir) : base(isCollectible: false) => _dir = dir;
+
+        // Resolve dependency assemblies from the same plugin directory
+        protected override Assembly? Load(AssemblyName assemblyName)
+        {
+            var candidate = Path.Combine(_dir, assemblyName.Name + ".dll");
+            return File.Exists(candidate) ? LoadFromAssemblyPath(candidate) : null;
+        }
     }
 }

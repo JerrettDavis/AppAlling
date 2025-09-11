@@ -11,8 +11,11 @@ public sealed class Store<TState> : IStore<TState>, IDisposable
 {
     private readonly Func<TState, IAction, TState> _reducer;
     private readonly BehaviorSubject<TState> _subject;
+#if NET9_0_OR_GREATER 
     private readonly Lock _gate = new();
-
+#else
+    private readonly object _gate = new();
+#endif
     /// <summary>
     /// Creates a new store with an initial state and a reducer function.
     /// </summary>
@@ -40,7 +43,7 @@ public sealed class Store<TState> : IStore<TState>, IDisposable
             var next = _reducer(Current, action);
             if (Equals(next, Current))
                 return;
-            
+
             Current = next;
             _subject.OnNext(next);
         }
