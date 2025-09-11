@@ -1,0 +1,53 @@
+- name: Introduction
+  href: index.md
+
+- name: Getting Started
+  items:
+    - name: Building & Running
+      href: getting-started/building-running.md
+    - name: Configuration
+      href: getting-started/configuration.md
+
+- name: Architecture
+  items:
+    - name: Overview
+      href: architecture/overview.md
+    - name: State Store
+      href: architecture/state-store.md
+    - name: Command Bus
+      href: architecture/command-bus.md
+    - name: Menu Composer
+      href: architecture/menu-composer.md
+    - name: Plugin Loader
+      href: architecture/plugin-loader.md
+
+- name: Plugin Development
+  items:
+    - name: Creating a Plugin
+      href: plugins/creating-plugin.md
+    - name: Contributing Commands
+      href: plugins/commands.md
+    - name: Contributing Menus
+      href: plugins/menus.md
+    - name: Contributing Tool Windows
+      href: plugins/tool-windows.md
+    - name: Plugin Metadata & Context
+      href: plugins/metadata-context.md
+
+- name: Testing
+  items:
+    - name: Acceptance Tests
+      href: testing/acceptance-tests.md
+    - name: Unit Tests
+      href: testing/unit-tests.md
+    - name: E2E & Coverage
+      href: testing/e2e-coverage.md
+      
+- name: API Reference
+  href: api/
+
+- name: Contributing
+  href: contributing.md
+
+- name: Changelog
+  href: changelog.md

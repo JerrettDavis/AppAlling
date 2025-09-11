@@ -55,6 +55,8 @@ public class PluginLoaderAcceptanceTests(ITestOutputHelper output) : TinyBddXuni
         return services.BuildServiceProvider();
     }
 
+    private static string Full(string path) => Path.GetFullPath(path);
+
     // -------- Scenarios -------------------------------------------------------------------
 
     [Scenario("Given an empty plugin folder; When I load plugins; Then none are returned")]
@@ -63,30 +65,75 @@ public class PluginLoaderAcceptanceTests(ITestOutputHelper output) : TinyBddXuni
         => Given("an empty temp plugin folder", CreateTempPluginDir)
            .When("I load plugins from that folder", LoadFrom)
            .Then("plugin list is empty", tuple => tuple.Plugins.Count == 0)
+           .And("contexts dictionary is empty", tuple => tuple.Ctx.Count == 0)
            .AssertPassed(TestContext.Current.CancellationToken);
 
-    [Scenario("Given a folder containing the HelloWorld plugin; When I load plugins; Then exactly one plugin and a valid context are returned")]
+    [Scenario("Given a folder containing the HelloWorld plugin; When I load plugins; Then exactly one plugin and RootDirectory equals the folder")]
     [Fact]
-    public Task Loads_helloworld_plugin_and_context()
+    public Task Loads_helloworld_plugin_and_valid_rootdirectory()
         => Given("a temp plugin folder", CreateTempPluginDir)
            .And("the HelloWorld plugin copied there", dir => { CopyHelloWorldTo(dir); return dir; })
-           .When("I load plugins from that folder", LoadFrom)
+           .When("I load plugins from that folder", dir =>
+           {
+               var result = LoadFrom(dir);
+               return (Dir: dir, result.Plugins, result.Ctx);
+           })
            .Then("exactly one plugin is returned", t => t.Plugins.Count == 1)
-           .And("its context root directory equals the plugin folder",
-                t => string.Equals(
-                    t.Plugins[0].GetType().Assembly.Location,
-                    HelloWorldDllPath(), 
-                    StringComparison.OrdinalIgnoreCase))
+           .And("its context RootDirectory equals the temp folder (full path) and exists", t =>
+           {
+               var plugin = t.Plugins[0];
+               var ok = t.Ctx.TryGetValue(plugin, out var ctx) && ctx is not null;
+               if (!ok) return false;
+
+               var expected = Full(t.Dir);
+               var actual = Full(ctx!.RootDirectory);
+               return string.Equals(actual, expected, StringComparison.OrdinalIgnoreCase)
+                      && Directory.Exists(actual);
+           })
            .AssertPassed(TestContext.Current.CancellationToken);
 
-    [Scenario("Given a folder with a bogus .dll and HelloWorld; When I load plugins; Then bogus is ignored and HelloWorld loads")]
+    [Scenario("Given a folder with a bogus .dll and HelloWorld; When I load plugins; Then bogus is ignored and RootDirectory is correct")]
     [Fact]
-    public Task Skips_bogus_files_but_loads_valid_plugins()
+    public Task Skips_bogus_files_but_rootdirectory_is_correct()
         => Given("a temp plugin folder", CreateTempPluginDir)
            .And("a bogus .dll file is written", dir => { WriteBogusDll(dir); return dir; })
            .And("the HelloWorld plugin copied there", dir => { CopyHelloWorldTo(dir); return dir; })
-           .When("I load plugins from that folder", LoadFrom)
+           .When("I load plugins from that folder", dir =>
+           {
+               var result = LoadFrom(dir);
+               return (Dir: dir, result.Plugins, result.Ctx);
+           })
            .Then("one valid plugin is returned", t => t.Plugins.Count == 1)
+           .And("its RootDirectory equals the temp folder", t =>
+           {
+               var plugin = t.Plugins[0];
+               var ctx = t.Ctx[plugin];
+               return string.Equals(Full(ctx.RootDirectory), Full(t.Dir), StringComparison.OrdinalIgnoreCase);
+           })
+           .AssertPassed(TestContext.Current.CancellationToken);
+
+    [Scenario("Given two copies of HelloWorld in the same folder; When I load; Then all plugin contexts map to the same RootDirectory")]
+    [Fact]
+    public Task Multiple_plugins_share_same_rootdirectory()
+        => Given("a temp plugin folder", CreateTempPluginDir)
+           .And("two copies of HelloWorld.dll under different names", dir =>
+           {
+               var src = HelloWorldDllPath();
+               File.Copy(src, Path.Combine(dir, "HelloWorldA.dll"), overwrite: true);
+               File.Copy(src, Path.Combine(dir, "HelloWorldB.dll"), overwrite: true);
+               return dir;
+           })
+           .When("I load plugins from that folder", dir =>
+           {
+               var result = LoadFrom(dir);
+               return (Dir: dir, result.Plugins, result.Ctx);
+           })
+           .Then("at least one plugin instance is loaded", t => t.Plugins.Count >= 1)
+           .And("every plugin's RootDirectory equals the temp folder", t =>
+           {
+               var expected = Full(t.Dir);
+               return t.Plugins.All(p => string.Equals(Full(t.Ctx[p].RootDirectory), expected, StringComparison.OrdinalIgnoreCase));
+           })
            .AssertPassed(TestContext.Current.CancellationToken);
 
     [Scenario("Given HelloWorld is loaded; When I ConfigureAll; Then its contributions are registered in DI")]
