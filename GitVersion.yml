@@ -2,6 +2,34 @@ mode: MainLine
 tag-prefix: 'v'
 commit-message-incrementing: Enabled
 
-major-version-bump-message: '(?m)^[a-z]+(?:\([\w\s\-,/\\]+\))?!:|(?m)^\s*BREAKING CHANGE:'
-minor-version-bump-message: '(?m)^feat(?:\([\w\s\-,/\\]+\))?:'
-patch-version-bump-message: '(?m)^(?:fix|perf)(?:\([\w\s\-,/\\]+\))?:'
+branches:
+  main:
+    regex: ^main$
+    tag: ''
+    increment: Minor
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+  feature:
+    regex: ^features?[/-]
+    tag: useBranchName
+    increment: Inherit
+  hotfix:
+    regex: ^hotfix(es)?[/-]
+    tag: useBranchName
+    increment: Patch
+
+major-version-bump-message: >
+  (?m)^[a-z]+(?:\([\w\s\-,/\\]+\))?!: # breaking via !
+  |(?m)^\s*BREAKING CHANGE:           # breaking via footer
+
+minor-version-bump-message: >
+  (?m)^feat(?:\([\w\s\-,/\\]+\))?:    # feat triggers minor bump
+
+patch-version-bump-message: >
+  (?m)^(?:fix|perf|ci|chore|refactor|docs|test)(?:\([\w\s\-,/\\]+\))?:  # treat docs/tests as patch bumps
+
+merge-message-formats:
+  merge: '{0}'
+ignore:
+  sha: []
+commit-date-format: yyyy-MM-dd
