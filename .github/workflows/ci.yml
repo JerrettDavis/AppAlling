@@ -29,7 +29,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            8.0.x
             9.0.x
           cache: true
           cache-dependency-path: |
@@ -115,7 +114,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            8.0.x
             9.0.x
           cache: true
           cache-dependency-path: |
