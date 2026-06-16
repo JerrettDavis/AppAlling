@@ -143,7 +143,7 @@ jobs:
       - name: Set version env vars
         shell: pwsh
         run: |
-          "PACKAGE_VERSION=${{ steps.gitversion.outputs.nuGetVersionV2 }}" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "PACKAGE_VERSION=${{ steps.gitversion.outputs.semVer }}" | Out-File -FilePath $env:GITHUB_ENV -Append
           "ASSEMBLY_VERSION=${{ steps.gitversion.outputs.assemblySemVer }}" | Out-File -FilePath $env:GITHUB_ENV -Append
           "FILE_VERSION=${{ steps.gitversion.outputs.assemblySemFileVer }}" | Out-File -FilePath $env:GITHUB_ENV -Append
 
@@ -233,8 +233,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: v${{ steps.gitversion.outputs.nuGetVersionV2 }}
-          name: Release v${{ steps.gitversion.outputs.nuGetVersionV2 }}
+          tag_name: v${{ steps.gitversion.outputs.semVer }}
+          name: Release v${{ steps.gitversion.outputs.semVer }}
           files: |
             ./artifacts/*.nupkg
             ./artifacts/*.snupkg
