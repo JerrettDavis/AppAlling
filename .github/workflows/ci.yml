@@ -141,9 +141,15 @@ jobs:
         uses: gittools/actions/gitversion/execute@v4
 
       - name: Set version env vars
+        id: version
         shell: pwsh
         run: |
-          "PACKAGE_VERSION=${{ steps.gitversion.outputs.semVer }}" | Out-File -FilePath $env:GITHUB_ENV -Append
+          $packageVersion = "${{ steps.gitversion.outputs.majorMinorPatch }}"
+          if (-not [string]::IsNullOrWhiteSpace("${{ steps.gitversion.outputs.preReleaseNumber }}")) {
+            $packageVersion = "${packageVersion}-ci.${{ steps.gitversion.outputs.preReleaseNumber }}"
+          }
+          "PACKAGE_VERSION=$packageVersion" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "package_version=$packageVersion" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           "ASSEMBLY_VERSION=${{ steps.gitversion.outputs.assemblySemVer }}" | Out-File -FilePath $env:GITHUB_ENV -Append
           "FILE_VERSION=${{ steps.gitversion.outputs.assemblySemFileVer }}" | Out-File -FilePath $env:GITHUB_ENV -Append
 
@@ -233,8 +239,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: v${{ steps.gitversion.outputs.semVer }}
-          name: Release v${{ steps.gitversion.outputs.semVer }}
+          tag_name: v${{ steps.version.outputs.package_version }}
+          name: Release v${{ steps.version.outputs.package_version }}
           files: |
             ./artifacts/*.nupkg
             ./artifacts/*.snupkg
