@@ -90,6 +90,7 @@ jobs:
             ${{ env.COVERAGE_SUMMARY }}
             ```
       - name: Upload coverage to Codecov
+        if: github.actor != 'dependabot[bot]'
         uses: codecov/codecov-action@v7
         with:
           files: coverage-report/Cobertura.xml
