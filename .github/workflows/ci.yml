@@ -106,6 +106,7 @@ jobs:
     permissions:
       contents: write
       packages: write
+      workflows: write
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -234,7 +235,22 @@ jobs:
             Write-Host "Tag $tag already exists. Skipping tag push."
           } else {
             git tag $tag
-            git push origin "refs/tags/$tag"
+
+            $maxAttempts = 3
+            $pushed = $false
+            for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+              git push origin "refs/tags/$tag"
+              if ($LASTEXITCODE -eq 0) {
+                $pushed = $true
+                break
+              }
+              Write-Host "Tag push attempt $attempt failed. Retrying in 5s..."
+              Start-Sleep -Seconds 5
+            }
+            if (-not $pushed) {
+              Write-Error "Failed to push tag $tag after $maxAttempts attempts."
+              exit 1
+            }
           }
 
       - name: Create GitHub Release
