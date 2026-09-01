@@ -10,6 +10,9 @@
         <NoWarn>$(NoWarn);1591</NoWarn>
         <WarningsAsErrors>true</WarningsAsErrors>
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+        <!-- .NET 10 SDK dropped the implicit VSTest bridge for Microsoft.Testing.Platform-based
+             test projects (xunit.v3); opt back in so `dotnet test` keeps working. -->
+        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
     </PropertyGroup>
     <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
         <EnableWindowsTargeting>true</EnableWindowsTargeting>
