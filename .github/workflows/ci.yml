@@ -51,7 +51,7 @@ jobs:
         run: |
           dotnet test $env:SOLUTION_PATH `
             --configuration Release `
-            --use-vstest `
+            --no-build `
             --collect:"XPlat Code Coverage" `
             -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura `
             -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Include="[AppAlling*]*" `
@@ -170,7 +170,7 @@ jobs:
 
       - name: Test (Release)
         shell: pwsh
-        run: dotnet test $env:SOLUTION_PATH --configuration Release --use-vstest --verbosity normal
+        run: dotnet test $env:SOLUTION_PATH --configuration Release --no-build --verbosity normal
 
       - name: Publish WinForms App (win-x64, self-contained)
         shell: pwsh
