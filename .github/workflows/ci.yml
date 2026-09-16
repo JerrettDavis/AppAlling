@@ -46,19 +46,18 @@ jobs:
         shell: pwsh
         run: dotnet build $env:SOLUTION_PATH --configuration Release --no-restore /p:ContinuousIntegrationBuild=true
 
+      - name: Install coverage tools
+        run: |
+          dotnet tool update -g dotnet-coverage
+          dotnet tool update -g dotnet-reportgenerator-globaltool
+
       - name: Test with coverage (Release)
         shell: pwsh
         run: |
-          dotnet test $env:SOLUTION_PATH `
-            --configuration Release `
-            --no-build `
-            --collect:"XPlat Code Coverage" `
-            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura `
-            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Include="[AppAlling*]*" `
-            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Exclude="[*Tests]*"
-
-      - name: Install ReportGenerator
-        run: dotnet tool update -g dotnet-reportgenerator-globaltool
+          dotnet-coverage collect `
+            "dotnet test $env:SOLUTION_PATH --configuration Release --no-build --verbosity normal" `
+            -f cobertura `
+            -o "coverage.cobertura.xml"
 
       - name: Combine coverage and create reports
         shell: pwsh
