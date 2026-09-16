@@ -81,8 +81,7 @@ jobs:
               --configuration Release `
               --no-build `
               --verbosity normal `
-              --results-directory $testResultsDir `
-              --logger trx
+              --results-directory $testResultsDir
 
       - name: Combine coverage and create reports
         shell: pwsh
