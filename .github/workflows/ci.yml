@@ -54,9 +54,26 @@ jobs:
       - name: Test with coverage (Release)
         shell: pwsh
         run: |
+          $coverageSettings = Join-Path $env:RUNNER_TEMP "codecoverage.runsettings"
+          @"
+          <?xml version="1.0" encoding="utf-8"?>
+          <Configuration>
+            <CodeCoverage>
+              <ModulePaths>
+                <Include>
+                  <ModulePath>.*AppAlling.*</ModulePath>
+                </Include>
+                <Exclude>
+                  <ModulePath>.*Tests.*</ModulePath>
+                </Exclude>
+              </ModulePaths>
+            </CodeCoverage>
+          </Configuration>
+          "@ | Set-Content -Path $coverageSettings -Encoding utf8
+
           dotnet-coverage collect `
             "dotnet test $env:SOLUTION_PATH --configuration Release --no-build --verbosity normal" `
-            -if "**/src/**/AppAlling*.dll" `
+            -s $coverageSettings `
             -f cobertura `
             -o "coverage.cobertura.xml"
 
