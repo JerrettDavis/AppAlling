@@ -72,13 +72,17 @@ jobs:
           </Configuration>
           "@ | Set-Content -Path $coverageSettings -Encoding utf8
 
-          $testCommand = "dotnet test $env:SOLUTION_PATH --configuration Release --no-build --verbosity normal --results-directory `"$testResultsDir`" --logger trx"
-
           dotnet-coverage collect `
-            $testCommand `
             -s $coverageSettings `
             -f cobertura `
-            -o "coverage.cobertura.xml"
+            -o "coverage.cobertura.xml" `
+            -- `
+            dotnet test $env:SOLUTION_PATH `
+              --configuration Release `
+              --no-build `
+              --verbosity normal `
+              --results-directory $testResultsDir `
+              --logger trx
 
       - name: Combine coverage and create reports
         shell: pwsh
