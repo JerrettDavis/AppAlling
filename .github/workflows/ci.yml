@@ -55,6 +55,7 @@ jobs:
         shell: pwsh
         run: |
           $coverageSettings = Join-Path $env:RUNNER_TEMP "codecoverage.runsettings"
+          $testResultsDir = Join-Path $env:GITHUB_WORKSPACE "TestResults"
           @"
           <?xml version="1.0" encoding="utf-8"?>
           <Configuration>
@@ -71,8 +72,10 @@ jobs:
           </Configuration>
           "@ | Set-Content -Path $coverageSettings -Encoding utf8
 
+          $testCommand = "dotnet test $env:SOLUTION_PATH --configuration Release --no-build --verbosity normal --results-directory `"$testResultsDir`" --logger trx"
+
           dotnet-coverage collect `
-            "dotnet test $env:SOLUTION_PATH --configuration Release --no-build --verbosity normal --results-directory TestResults --logger trx" `
+            $testCommand `
             -s $coverageSettings `
             -f cobertura `
             -o "coverage.cobertura.xml"
