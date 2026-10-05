@@ -4,9 +4,9 @@
     "net10.0-windows7.0": {
       "coverlet.collector": {
         "type": "Direct",
-        "requested": "[10.0.1, )",
-        "resolved": "10.0.1",
-        "contentHash": "27jXSV/0DbVqF5jDrAxuQFZ9oaz6gmG03p8ttxAFk+X0M4woFYj7MoWDLCna5EGLb0CE6OE7X6ZH3Wt5smTtaA=="
+        "requested": "[10.1.0, )",
+        "resolved": "10.1.0",
+        "contentHash": "SlYCIHnBYxINSUpR75SiM5JEmnx11pqT+Ac/C/fUqTTA0dLPl9eYzmFXKKuxmQhL3ZdTQl4PBD3YdAxAauaKLQ=="
       },
       "Microsoft.NET.Test.Sdk": {
         "type": "Direct",
@@ -20,11 +20,11 @@
       },
       "TinyBDD.Xunit.v3": {
         "type": "Direct",
-        "requested": "[0.19.42, )",
-        "resolved": "0.19.42",
-        "contentHash": "raZo16Z5RDbshr3pi/jbLozWpn3T8SgvrR2PaCzAXTNoUW61zqCLi490h92cUoB6s5JUyhAQsK0vKZ4+oFGecw==",
+        "requested": "[0.19.43, )",
+        "resolved": "0.19.43",
+        "contentHash": "DYtpxMExItBbx7rPQDcDuSrB0cr6MFqwE0MNJ/3OgGf2rsuqCxqVkXUprygzxRxknXxOwac5A/rCha0za9y2uw==",
         "dependencies": {
-          "TinyBDD": "0.19.42",
+          "TinyBDD": "0.19.43",
           "xunit.v3.extensibility.core": "3.2.2"
         }
       },
@@ -36,9 +36,9 @@
       },
       "Xunit.StaFact": {
         "type": "Direct",
-        "requested": "[4.0.23, )",
-        "resolved": "4.0.23",
-        "contentHash": "bXGCiiPjQ2Bs9qvNsRh7zNoJCTa3i0uNJmQo0JHFPFBB2NOUaAzd+Cd8s0+mPNthLOy9/C0crvZobthHDFZ96w==",
+        "requested": "[4.0.24, )",
+        "resolved": "4.0.24",
+        "contentHash": "bO1WLZt74g40KULhKXuRm+RkfmxlC0V5syYzGv2KIRgajDgADXXVJfBM/oml71tSY9kWBA7+htt8h5xgqPInUQ==",
         "dependencies": {
           "xunit.v3.extensibility.core": "4.0.0"
         }
@@ -184,8 +184,8 @@
       },
       "TinyBDD": {
         "type": "Transitive",
-        "resolved": "0.19.42",
-        "contentHash": "DdByYowx7+JLrNa3Gr2pCJIvF5hPClvM5A6qsg75fjsw4oeAOGzvw+Al1wKRoaJydD9ecxUiIX0UXy8RJbf0hw==",
+        "resolved": "0.19.43",
+        "contentHash": "nuKlC0kQyN6eExgAca2dnWJDRsMYWSooz3cKIe3a3/gKY/zBX0w4o7CDiVnnj0YdPcAYrQcYlDUGEhn/eOT5Uw==",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "10.0.8",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.8"
